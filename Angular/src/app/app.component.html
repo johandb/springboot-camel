@@ -1,7 +1,26 @@
-<div class="container">
+<div class="container-fluid">
+    <h1>Demo</h1>
+    <div class="row">
+        <div class="col-4">
+            <form #f="ngForm">
+                <div class="form-group">
+                    <label>Operation</label>
+                    <select class="custom-select mr-sm-2" [(ngModel)]="model.operation" name="operation">
+                      <option *ngFor="let op of operations" [ngValue]="op">{{ op }}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Data</label>
+                    <input class="form-control" name="txdata" [(ngModel)]="model.txData" type="text">
+                </div>
+                <button (click)="sentOperation()" type="button">Sent</button>
+            </form>
+            Result: {{ response | json }}
+        </div>
+        <div class="col-8"></div>
+    </div>
     <div class="row">
         <div class="col-8">
-            <h1>Demo</h1>
             <div *ngIf="accounts.length > 0">
                 <h4>Accounts</h4>
                 <select [(ngModel)]="model.account" name="account" class="custom-select mr-sm-2" id="account">

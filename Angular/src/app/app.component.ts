@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { WebSocketService } from './services/web-socket.service';
+import { DataService } from './services/data.service';
 
 @Component({
   selector: 'app-root',
@@ -10,10 +11,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   response: any = {};
   accounts = [];
+  operations = ['ETH_ACCOUNTS', 'ETH_GET_BALANCE', 'ETH_GET_TRANSACTION_COUNT', 'ETH_SEND_TRANSACTION'];
 
   model: any = {};
 
-  constructor(private wsService: WebSocketService) {
+  constructor(private wsService: WebSocketService, private dataService: DataService) {
   }
 
   ngOnInit(): void {
@@ -43,9 +45,16 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  sent() {
-    console.log('sent');
-    this.wsService.sendMessageToServer(this.model);
+  sentOperation() {
+    this.accounts = [];
+    console.log('sentOperation:', this.model);
+    this.dataService.sentOperation(this.model).subscribe(
+      data => {
+        console.log('data:', data);
+      }, error => {
+        console.log('error:', error);
+      }
+    );
   }
 
 }
