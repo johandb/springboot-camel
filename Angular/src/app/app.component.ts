@@ -40,7 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
     switch (operation) {
       case 'ETH_ACCOUNTS':
         this.accounts = this.response.data.split(',');
-        console.log('account:', this.accounts)
+        console.log('account:', this.accounts);
         break;
     }
   }
