@@ -1,0 +1,23 @@
+{
+"operation": "ETH_GET_BALANCE",
+"txData": "&address=0xbe25Ba5A4a18B14DAb3764eA4bF26e55a715C66F"
+}
+
+{
+"operation": "ETH_GET_TRANSACTION_COUNT",
+"txData": "&address=0xbe25Ba5A4a18B14DAb3764eA4bF26e55a715C66F&atBlock=20"
+}
+
+{
+"operation": "ETH_SEND_TRANSACTION",
+"txData": "&fromAddress=0x8898922364102ad83ce9287b7870d61b4d845996&toAddress=0x5f5e3241bbbE86e03e1a9f76879Fbd29ddf21DB2&value=1000000000000000000&nonce=2&gasLimit=6721975&gasPrice=21000"
+}
+
+{
+"operation": "ETH_SEND_TRANSACTION",
+"txData": "&fromAddress=0x18F8556acf713E36C8c3ef953815B77f1A41C306&toAddress=0x6D16bBa7b7c8718873EFbbFE66Bd74888ABB7E68&value=2000000000000000000&nonce=0&gasLimit=6721975&gasPrice=21000"
+}
+
+{
+"operation": "ETH_ACCOUNTS"
+}

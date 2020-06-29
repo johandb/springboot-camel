@@ -1,0 +1,18 @@
+camel:
+  springboot:
+    main-run-controller: true
+
+spring:
+  activemq:
+    brokerUrl: tcp://localhost:61616
+    user: admin
+    password: admin
+
+web3:
+  host:
+    url: web3j://http://127.0.0.1
+    port: 7545
+
+activemq:
+  queue:
+    operation: operation
