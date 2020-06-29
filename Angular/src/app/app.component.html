@@ -1,0 +1,17 @@
+<div class="container">
+    <div class="row">
+        <div class="col-8">
+            <h1>Demo</h1>
+            <div *ngIf="accounts.length > 0">
+                <h4>Accounts</h4>
+                <select [(ngModel)]="model.account" name="account" class="custom-select mr-sm-2" id="account">
+            <option value="0" selected>-- Selecteer een account --</option>
+            <option *ngFor="let account of accounts" value="{{ account }}"
+              [selected]="account == model.account">{{ account }}
+            </option>
+          </select>
+            </div>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</div>
