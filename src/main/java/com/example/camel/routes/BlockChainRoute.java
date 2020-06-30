@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.web3j.protocol.core.methods.response.EthBlock;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Component
 @Slf4j
@@ -57,6 +57,12 @@ public class BlockChainRoute extends RouteBuilder {
                 .to("activemq:queue:blocks")
                 .end();
 
+        from(WEB3_URL + ":" + WEB3_PORT + "?operation=ETH_LOG_OBSERVABLE")
+                .process(exchange -> {
+                    log.info("ETH_LOG_OBSERVABLE:{}", exchange.getIn().getBody());
+                })
+                .end();
+
         from("activemq:queue:blocks")
                 .process(exchange -> {
                     String blockNumber = exchange.getIn().getBody(String.class);
@@ -66,9 +72,8 @@ public class BlockChainRoute extends RouteBuilder {
                 .toD(WEB3_URL + ":" + WEB3_PORT + "?operation=${header.operation}&${header.txdata}")
                 .process(exchange -> {
                     EthBlock.Block block = exchange.getIn().getBody(EthBlock.Block.class);
-                    Date date = new Date(block.getTimestamp().longValue() * 1000);
-                    Format format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-                    log.info("BLOCK {} MINED ON:{}", block.getNumber().toString(), format.format(date));
+                    LocalDateTime stamp = Instant.ofEpochMilli(block.getTimestamp().longValue() * 1000).atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    log.info("BLOCK {} MINED ON:{}", block.getNumber().toString(), stamp.toString());
                 })
                 .end();
     }

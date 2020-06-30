@@ -11,7 +11,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   response: any = {};
   accounts = [];
-  operations = ['ETH_ACCOUNTS', 'ETH_GET_BALANCE', 'ETH_GET_TRANSACTION_COUNT', 'ETH_SEND_TRANSACTION'];
+  operations = ['ETH_ACCOUNTS', 'ETH_GET_BALANCE', 'ETH_GET_TRANSACTION_COUNT',
+    'ETH_SEND_TRANSACTION', 'ETH_GET_TRANSACTION_RECEIPT'];
 
   model: any = {};
 
