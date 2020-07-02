@@ -12,18 +12,17 @@ import org.springframework.stereotype.Component;
 import org.web3j.abi.EventEncoder;
 import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.TypeReference;
+import org.web3j.abi.datatypes.Bool;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.Type;
-import org.web3j.abi.datatypes.Uint;
+import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.protocol.core.methods.response.EthBlock;
 
-import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Random;
 
 import static org.apache.camel.component.web3j.Web3jConstants.*;
 
@@ -93,21 +92,23 @@ public class BlockChainRoute extends RouteBuilder {
 //        from("web3j://http://127.0.0.1:7545?operation=ETH_LOG_OBSERVABLE")
                 .setHeader(OPERATION, constant(ETH_SEND_TRANSACTION))
                 .setHeader(FROM_ADDRESS, constant("0x5f5e3241bbbE86e03e1a9f76879Fbd29ddf21DB2"))
-                .setHeader(TO_ADDRESS, constant("0x18F8556acf713E36C8c3ef953815B77f1A41C306"))
+                .setHeader(TO_ADDRESS, constant("0x902750d2cee0B229A135E0f4B48279d02BB55453"))
                 .setHeader(AT_BLOCK, constant("latest"))
                 .process(new Processor() {
                     public void process(Exchange exchange) throws Exception {
-                        int random = new Random().nextInt(50);
-                        log.info("setBTCCap:{}", random);
-                        Function function = new Function("setBTCCap", Arrays.<Type>asList(new Uint(BigInteger.valueOf(random))), Collections.<TypeReference<?>>emptyList());
-                        String setBTCCap = FunctionEncoder.encode(function);
-                        exchange.getIn().setHeader(DATA, setBTCCap);
+                        //int random = new Random().nextInt(50);
+                        //log.info("setConsent:{}", random);
+                        Function function = new Function("setConsent",
+                                Arrays.<Type>asList(new Utf8String("1f4e22d9b6cc84622293adc79d3ba4e55721d99924616307ee4b59cb543162d9"), new Bool(true)),
+                                Collections.<TypeReference<?>>emptyList());
+                        String setConsent = FunctionEncoder.encode(function);
+                        exchange.getIn().setHeader(DATA, setConsent);
                     }
                 })
                 .to("web3j://http://127.0.0.1:7545")
-                .process(exchange -> {
-                    log.info("TX:{}", exchange.getIn().getBody());
-                })
+//                .process(exchange -> {
+//                    log.info("TX:{}", exchange.getIn().getBody());
+//                })
                 .end();
     }
 }
