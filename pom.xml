@@ -72,6 +72,12 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-test-junit5</artifactId>
+            <version>3.4.0</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -87,7 +93,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- Camel BOM -->
             <dependency>
                 <groupId>org.apache.camel.springboot</groupId>
                 <artifactId>camel-spring-boot-dependencies</artifactId>
@@ -95,7 +100,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- ... other BOMs or dependencies ... -->
         </dependencies>
     </dependencyManagement>
 

@@ -4,18 +4,34 @@ import com.example.camel.model.Operation;
 import com.example.camel.model.Response;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.web3j.abi.EventEncoder;
+import org.web3j.abi.FunctionEncoder;
+import org.web3j.abi.TypeReference;
+import org.web3j.abi.datatypes.Function;
+import org.web3j.abi.datatypes.Type;
+import org.web3j.abi.datatypes.Uint;
 import org.web3j.protocol.core.methods.response.EthBlock;
 
+import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Random;
+
+import static org.apache.camel.component.web3j.Web3jConstants.*;
 
 @Component
 @Slf4j
 public class BlockChainRoute extends RouteBuilder {
+
+    String topics = EventEncoder.buildEventSignature("CallbackGetBTCCap()");
 
     @Value("${web3.host.url}")
     private String WEB3_URL;
@@ -27,6 +43,8 @@ public class BlockChainRoute extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
+        log.info("topic:{}", topics);
+
         from("activemq:queue:operation")
                 .process(exchange -> {
                     String body = exchange.getIn().getBody(String.class);
@@ -57,23 +75,42 @@ public class BlockChainRoute extends RouteBuilder {
                 .to("activemq:queue:blocks")
                 .end();
 
-        from(WEB3_URL + ":" + WEB3_PORT + "?operation=ETH_LOG_OBSERVABLE")
-                .process(exchange -> {
-                    log.info("ETH_LOG_OBSERVABLE:{}", exchange.getIn().getBody());
-                })
-                .end();
-
         from("activemq:queue:blocks")
                 .process(exchange -> {
                     String blockNumber = exchange.getIn().getBody(String.class);
+//                    exchange.getIn().setHeader(OPERATION, constant(ETH_GET_BLOCK_BY_NUMBER));
+//                    exchange.getIn().setHeader(AT_BLOCK, blockNumber);
+//                    exchange.getIn().setHeader(FULL_TRANSACTION_OBJECTS, true);
                     exchange.getIn().setHeader("operation", "ETH_GET_BLOCK_BY_NUMBER");
                     exchange.getIn().setHeader("txdata", "atBlock=" + blockNumber + "&fullTransactionObjects=true");
                 })
                 .toD(WEB3_URL + ":" + WEB3_PORT + "?operation=${header.operation}&${header.txdata}")
+                //.to(WEB3_URL + ":" + WEB3_PORT)
                 .process(exchange -> {
                     EthBlock.Block block = exchange.getIn().getBody(EthBlock.Block.class);
                     LocalDateTime stamp = Instant.ofEpochMilli(block.getTimestamp().longValue() * 1000).atZone(ZoneId.systemDefault()).toLocalDateTime();
                     log.info("BLOCK {} MINED ON:{}", block.getNumber().toString(), stamp.toString());
+                })
+                .end();
+
+//        from("activemq:queue:oracle")
+        from("web3j://http://127.0.0.1:7545?operation=ETH_LOG_OBSERVABLE&topics=0xbc990f6ed9f9b01a5c7a8bc19e4a3c811b42c39a9407311f3101e4c4ba7f13e3")
+                .setHeader(OPERATION, constant(ETH_SEND_TRANSACTION))
+                .setHeader(FROM_ADDRESS, constant("0x5f5e3241bbbE86e03e1a9f76879Fbd29ddf21DB2"))
+                .setHeader(TO_ADDRESS, constant("0x18F8556acf713E36C8c3ef953815B77f1A41C306"))
+                .setHeader(AT_BLOCK, constant("latest"))
+                .process(new Processor() {
+                    public void process(Exchange exchange) throws Exception {
+                        int random = new Random().nextInt(50);
+                        Function function = new Function("setBTCCap", Arrays.<Type>asList(new Uint(BigInteger.valueOf(random))), Collections.<TypeReference<?>>emptyList());
+                        //Function function = new Function("getBTCCap", Arrays.<Type>asList(), Collections.<TypeReference<?>>emptyList());
+                        String setBTCCap = FunctionEncoder.encode(function);
+                        exchange.getIn().setHeader(DATA, setBTCCap);
+                    }
+                })
+                .to("web3j://http://127.0.0.1:7545")
+                .process(exchange -> {
+                    log.info("TX:{}", exchange.getIn().getBody());
                 })
                 .end();
     }
