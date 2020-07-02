@@ -31,7 +31,7 @@ import static org.apache.camel.component.web3j.Web3jConstants.*;
 @Slf4j
 public class BlockChainRoute extends RouteBuilder {
 
-    String topics = EventEncoder.buildEventSignature("CallbackGetBTCCap()");
+    String topics = EventEncoder.buildEventSignature("setBTCCap()");
 
     @Value("${web3.host.url}")
     private String WEB3_URL;
@@ -89,7 +89,8 @@ public class BlockChainRoute extends RouteBuilder {
                 })
                 .end();
 
-        from("web3j://http://127.0.0.1:7545?operation=ETH_LOG_OBSERVABLE&topics=" + topics)
+        from("activemq:queue:oracle")
+//        from("web3j://http://127.0.0.1:7545?operation=ETH_LOG_OBSERVABLE")
                 .setHeader(OPERATION, constant(ETH_SEND_TRANSACTION))
                 .setHeader(FROM_ADDRESS, constant("0x5f5e3241bbbE86e03e1a9f76879Fbd29ddf21DB2"))
                 .setHeader(TO_ADDRESS, constant("0x18F8556acf713E36C8c3ef953815B77f1A41C306"))
