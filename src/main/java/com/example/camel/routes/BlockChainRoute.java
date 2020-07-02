@@ -78,14 +78,10 @@ public class BlockChainRoute extends RouteBuilder {
         from("activemq:queue:blocks")
                 .process(exchange -> {
                     String blockNumber = exchange.getIn().getBody(String.class);
-//                    exchange.getIn().setHeader(OPERATION, constant(ETH_GET_BLOCK_BY_NUMBER));
-//                    exchange.getIn().setHeader(AT_BLOCK, blockNumber);
-//                    exchange.getIn().setHeader(FULL_TRANSACTION_OBJECTS, true);
                     exchange.getIn().setHeader("operation", "ETH_GET_BLOCK_BY_NUMBER");
                     exchange.getIn().setHeader("txdata", "atBlock=" + blockNumber + "&fullTransactionObjects=true");
                 })
                 .toD(WEB3_URL + ":" + WEB3_PORT + "?operation=${header.operation}&${header.txdata}")
-                //.to(WEB3_URL + ":" + WEB3_PORT)
                 .process(exchange -> {
                     EthBlock.Block block = exchange.getIn().getBody(EthBlock.Block.class);
                     LocalDateTime stamp = Instant.ofEpochMilli(block.getTimestamp().longValue() * 1000).atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -93,8 +89,7 @@ public class BlockChainRoute extends RouteBuilder {
                 })
                 .end();
 
-//        from("activemq:queue:oracle")
-        from("web3j://http://127.0.0.1:7545?operation=ETH_LOG_OBSERVABLE&topics=0xbc990f6ed9f9b01a5c7a8bc19e4a3c811b42c39a9407311f3101e4c4ba7f13e3")
+        from("web3j://http://127.0.0.1:7545?operation=ETH_LOG_OBSERVABLE&topics=" + topics)
                 .setHeader(OPERATION, constant(ETH_SEND_TRANSACTION))
                 .setHeader(FROM_ADDRESS, constant("0x5f5e3241bbbE86e03e1a9f76879Fbd29ddf21DB2"))
                 .setHeader(TO_ADDRESS, constant("0x18F8556acf713E36C8c3ef953815B77f1A41C306"))
@@ -102,8 +97,8 @@ public class BlockChainRoute extends RouteBuilder {
                 .process(new Processor() {
                     public void process(Exchange exchange) throws Exception {
                         int random = new Random().nextInt(50);
+                        log.info("setBTCCap:{}", random);
                         Function function = new Function("setBTCCap", Arrays.<Type>asList(new Uint(BigInteger.valueOf(random))), Collections.<TypeReference<?>>emptyList());
-                        //Function function = new Function("getBTCCap", Arrays.<Type>asList(), Collections.<TypeReference<?>>emptyList());
                         String setBTCCap = FunctionEncoder.encode(function);
                         exchange.getIn().setHeader(DATA, setBTCCap);
                     }
