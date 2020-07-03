@@ -25,9 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.TypeReference;
-import org.web3j.abi.datatypes.Function;
-import org.web3j.abi.datatypes.Type;
-import org.web3j.abi.datatypes.Uint;
+import org.web3j.abi.datatypes.*;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -43,7 +41,7 @@ public class CamelOracleRouteTest extends CamelTestSupport {
     protected ProducerTemplate template;
 
     private final String addressFrom = "0x6e62f007992992DC7e0EA18208DCe4E273F8b898";
-    private final String addressTo = "0xaf47860b46909a0D4527bEFdf03D787e544A7AB9";
+    private final String addressTo = "0x42fC663a724C5792CC22ca6DcF026c626d322618";
 
 
     @Test
@@ -106,6 +104,53 @@ public class CamelOracleRouteTest extends CamelTestSupport {
         List<Type> decode = FunctionReturnDecoder.decode(body, function.getOutputParameters());
         System.out.println("transaction hash: " + body);
         System.out.printf("transaction result  " + decode.toString());
+    }
+
+    @Test
+    public void setConsent() throws Exception {
+        // 1f4e22d9b6cc84622293adc79d3ba4e55721d99924616307ee4b59cb543162d9
+        Function function = new Function("setConsent",
+                Arrays.<Type>asList(new Utf8String("1f4e22d9b6cc84622293adc79d3ba4e55721d99924616307ee4b59cb543162d9"), new Bool(true)),
+                Arrays.<TypeReference<?>>asList());
+        String encodedFunction = FunctionEncoder.encode(function);
+
+        Exchange exchange = createExchangeWithHeader(OPERATION, ETH_SEND_TRANSACTION);
+        exchange.getIn().setHeader(FROM_ADDRESS, addressFrom);
+        exchange.getIn().setHeader(TO_ADDRESS, addressTo);
+        exchange.getIn().setHeader(AT_BLOCK, "latest");
+        exchange.getIn().setHeader(DATA, encodedFunction);
+
+        template.send(exchange);
+        String body = exchange.getIn().getBody(String.class);
+        System.out.println("body:" + body);
+        assertTrue(body != null);
+
+        List<Type> decode = FunctionReturnDecoder.decode(body, function.getOutputParameters());
+        System.out.println("transaction hash: " + body);
+        System.out.printf("transaction result  " + decode.toString());
+    }
+
+    @Test
+    public void getConsent() throws Exception {
+        Function function = new Function("getConsent", Arrays.<Type>asList(), Arrays.<TypeReference<?>>asList(new TypeReference<Uint>() {
+        }));
+        String encodedFunction = FunctionEncoder.encode(function);
+
+        Exchange exchange = createExchangeWithHeader(OPERATION, ETH_CALL);
+        exchange.getIn().setHeader(FROM_ADDRESS, addressFrom);
+        exchange.getIn().setHeader(TO_ADDRESS, addressTo);
+        exchange.getIn().setHeader(AT_BLOCK, "latest");
+        exchange.getIn().setHeader(DATA, encodedFunction);
+
+        template.send(exchange);
+        String body = exchange.getIn().getBody(String.class);
+        System.out.println("body:" + body);
+        assertTrue(body != null);
+
+        Type result = FunctionReturnDecoder.decodeIndexedValue(body, new TypeReference<Uint>() {
+        });
+        List<Type> decode = FunctionReturnDecoder.decode(body, function.getOutputParameters());
+        System.out.println("getConsent: " + decode.get(0).getValue());
     }
 
     protected Exchange createExchangeWithHeader(String key, Object value) {

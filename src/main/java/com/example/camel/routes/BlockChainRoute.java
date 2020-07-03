@@ -89,7 +89,6 @@ public class BlockChainRoute extends RouteBuilder {
                 })
                 .end();
 
-//        from("activemq:queue:oracle")
         from("web3j://http://127.0.0.1:7545?operation=ETH_LOG_OBSERVABLE&topics=" + topics)
                 .setHeader(OPERATION, constant(ETH_SEND_TRANSACTION))
                 .setHeader(FROM_ADDRESS, constant("0x6e62f007992992DC7e0EA18208DCe4E273F8b898"))
