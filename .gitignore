@@ -1,3 +1,4 @@
 .idea/
 camel-demo.iml
 target/
+src/main/resources/build/
