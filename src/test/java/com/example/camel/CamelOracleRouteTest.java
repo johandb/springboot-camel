@@ -43,7 +43,7 @@ public class CamelOracleRouteTest extends CamelTestSupport {
     protected ProducerTemplate template;
 
     private final String addressFrom = "0x6e62f007992992DC7e0EA18208DCe4E273F8b898";
-    private final String addressTo = "0xbe45Dfd2Fa85Dca835Ebc1628E9fc86A9352A33A";
+    private final String addressTo = "0xeA146c25024E79D59E267a51CdF53cc98F49ecEF";
 
 
     @Test
