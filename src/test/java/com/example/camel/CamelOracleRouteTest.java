@@ -41,7 +41,7 @@ public class CamelOracleRouteTest extends CamelTestSupport {
     protected ProducerTemplate template;
 
     private final String addressFrom = "0x6e62f007992992DC7e0EA18208DCe4E273F8b898";
-    private final String addressTo = "0x42fC663a724C5792CC22ca6DcF026c626d322618";
+    private final String addressTo = "0x40e6cA6dCc6Da9eF1445c8e10dED70d44b811A89";
 
 
     @Test
@@ -111,10 +111,11 @@ public class CamelOracleRouteTest extends CamelTestSupport {
         // 1f4e22d9b6cc84622293adc79d3ba4e55721d99924616307ee4b59cb543162d9
         Function function = new Function("setConsent",
                 Arrays.<Type>asList(new Utf8String("1f4e22d9b6cc84622293adc79d3ba4e55721d99924616307ee4b59cb543162d9"), new Bool(true)),
-                Arrays.<TypeReference<?>>asList());
+                Arrays.asList(new TypeReference<Bool>() {
+                }));
         String encodedFunction = FunctionEncoder.encode(function);
 
-        Exchange exchange = createExchangeWithHeader(OPERATION, ETH_SEND_TRANSACTION);
+        Exchange exchange = createExchangeWithHeader(OPERATION, ETH_CALL);
         exchange.getIn().setHeader(FROM_ADDRESS, addressFrom);
         exchange.getIn().setHeader(TO_ADDRESS, addressTo);
         exchange.getIn().setHeader(AT_BLOCK, "latest");
@@ -127,12 +128,12 @@ public class CamelOracleRouteTest extends CamelTestSupport {
 
         List<Type> decode = FunctionReturnDecoder.decode(body, function.getOutputParameters());
         System.out.println("transaction hash: " + body);
-        System.out.printf("transaction result  " + decode.toString());
+        System.out.printf("transaction result  " + decode.get(0).getValue());
     }
 
     @Test
     public void getConsent() throws Exception {
-        Function function = new Function("getConsent", Arrays.<Type>asList(), Arrays.<TypeReference<?>>asList(new TypeReference<Uint>() {
+        Function function = new Function("getConsent", Arrays.<Type>asList(), Arrays.asList(new TypeReference<Bool>() {
         }));
         String encodedFunction = FunctionEncoder.encode(function);
 
@@ -147,7 +148,7 @@ public class CamelOracleRouteTest extends CamelTestSupport {
         System.out.println("body:" + body);
         assertTrue(body != null);
 
-        Type result = FunctionReturnDecoder.decodeIndexedValue(body, new TypeReference<Uint>() {
+        Type result = FunctionReturnDecoder.decodeIndexedValue(body, new TypeReference<Bool>() {
         });
         List<Type> decode = FunctionReturnDecoder.decode(body, function.getOutputParameters());
         System.out.println("getConsent: " + decode.get(0).getValue());
