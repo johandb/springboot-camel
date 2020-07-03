@@ -93,7 +93,7 @@ public class BlockChainRoute extends RouteBuilder {
         from("web3j://http://127.0.0.1:7545?operation=ETH_LOG_OBSERVABLE&topics=" + topics)
                 .setHeader(OPERATION, constant(ETH_SEND_TRANSACTION))
                 .setHeader(FROM_ADDRESS, constant("0x6e62f007992992DC7e0EA18208DCe4E273F8b898"))
-                .setHeader(TO_ADDRESS, constant("0xeA146c25024E79D59E267a51CdF53cc98F49ecEF"))
+                .setHeader(TO_ADDRESS, constant("0xaf47860b46909a0D4527bEFdf03D787e544A7AB9"))
                 .setHeader(AT_BLOCK, constant("latest"))
                 .process(new Processor() {
                     public void process(Exchange exchange) throws Exception {
