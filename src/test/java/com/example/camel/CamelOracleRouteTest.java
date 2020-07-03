@@ -42,8 +42,8 @@ public class CamelOracleRouteTest extends CamelTestSupport {
     @Produce(uri = "web3j://http://127.0.0.1:7545")
     protected ProducerTemplate template;
 
-    private final String addressFrom = "0x5f5e3241bbbE86e03e1a9f76879Fbd29ddf21DB2";
-    private final String addressTo = "0x18F8556acf713E36C8c3ef953815B77f1A41C306";
+    private final String addressFrom = "0x6e62f007992992DC7e0EA18208DCe4E273F8b898";
+    private final String addressTo = "0xbe45Dfd2Fa85Dca835Ebc1628E9fc86A9352A33A";
 
 
     @Test
