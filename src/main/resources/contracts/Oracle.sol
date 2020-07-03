@@ -25,7 +25,8 @@ contract Oracle {
     /**
      *  @dev Definition of the event triggered when a consent is successfully notarized in the registry
      */
-	event Notarized(address indexed _signer, string _studentHash);
+	//event Notarized(address indexed _signer, string _studentHash);
+	event Notarized();
 
     constructor() public {
         owner = msg.sender;
@@ -60,7 +61,8 @@ contract Oracle {
         registry[id].hash = _studentHash;
         registry[id].consent = _consent;
 
-        emit Notarized(msg.sender, _studentHash);
+        //emit Notarized(msg.sender, _studentHash);
+        emit Notarized();
 
         return true;
     }

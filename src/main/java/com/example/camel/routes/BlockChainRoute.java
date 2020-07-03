@@ -31,7 +31,7 @@ import static org.apache.camel.component.web3j.Web3jConstants.*;
 @Slf4j
 public class BlockChainRoute extends RouteBuilder {
 
-    String topics = EventEncoder.buildEventSignature("CallbackGetBTCCap()");
+    String topics = EventEncoder.buildEventSignature("Notarized()");
 
     @Value("${web3.host.url}")
     private String WEB3_URL;
@@ -92,11 +92,12 @@ public class BlockChainRoute extends RouteBuilder {
         from("web3j://http://127.0.0.1:7545?operation=ETH_LOG_OBSERVABLE&topics=" + topics)
                 .setHeader(OPERATION, constant(ETH_SEND_TRANSACTION))
                 .setHeader(FROM_ADDRESS, constant("0x6e62f007992992DC7e0EA18208DCe4E273F8b898"))
-                .setHeader(TO_ADDRESS, constant("0xaf47860b46909a0D4527bEFdf03D787e544A7AB9"))
+                .setHeader(TO_ADDRESS, constant("0x4232Dd27e975DA918363EbA39caC883f5312513b"))
                 .setHeader(AT_BLOCK, constant("latest"))
                 .process(new Processor() {
                     public void process(Exchange exchange) throws Exception {
                         int random = new Random().nextInt(50);
+                        log.info("ETH_LOG_OBSERVABLE: {}", exchange.getIn().getBody());
                         log.info("set amount:{}", random);
                         Function function = new Function("setBTCCap", Arrays.<Type>asList(new Uint(BigInteger.valueOf(random))), Collections.<TypeReference<?>>emptyList());
                         String setBTCCap = FunctionEncoder.encode(function);
