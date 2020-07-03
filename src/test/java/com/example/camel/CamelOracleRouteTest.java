@@ -115,10 +115,12 @@ public class CamelOracleRouteTest extends CamelTestSupport {
                 }));
         String encodedFunction = FunctionEncoder.encode(function);
 
-        Exchange exchange = createExchangeWithHeader(OPERATION, ETH_CALL);
+        Exchange exchange = createExchangeWithHeader(OPERATION, ETH_SEND_TRANSACTION);
         exchange.getIn().setHeader(FROM_ADDRESS, addressFrom);
         exchange.getIn().setHeader(TO_ADDRESS, addressTo);
         exchange.getIn().setHeader(AT_BLOCK, "latest");
+        exchange.getIn().setHeader(GAS_LIMIT, "6721975");
+        exchange.getIn().setHeader(GAS_PRICE, "21000");
         exchange.getIn().setHeader(DATA, encodedFunction);
 
         template.send(exchange);
@@ -126,6 +128,9 @@ public class CamelOracleRouteTest extends CamelTestSupport {
         System.out.println("body:" + body);
         assertTrue(body != null);
 
+        Type result = FunctionReturnDecoder.decodeIndexedValue(body, new TypeReference<Bool>() {
+        });
+        System.out.println("result:" + result.getValue());
         List<Type> decode = FunctionReturnDecoder.decode(body, function.getOutputParameters());
         System.out.println("transaction hash: " + body);
         System.out.printf("transaction result  " + decode.get(0).getValue());
@@ -133,8 +138,10 @@ public class CamelOracleRouteTest extends CamelTestSupport {
 
     @Test
     public void getConsent() throws Exception {
-        Function function = new Function("getConsent", Arrays.<Type>asList(), Arrays.asList(new TypeReference<Bool>() {
-        }));
+        Function function = new Function("getConsent",
+                Arrays.<Type>asList(new Utf8String("1f4e22d9b6cc84622293adc79d3ba4e55721d99924616307ee4b59cb543162d9")),
+                Arrays.asList(new TypeReference<Bool>() {
+                }));
         String encodedFunction = FunctionEncoder.encode(function);
 
         Exchange exchange = createExchangeWithHeader(OPERATION, ETH_CALL);
@@ -151,7 +158,8 @@ public class CamelOracleRouteTest extends CamelTestSupport {
         Type result = FunctionReturnDecoder.decodeIndexedValue(body, new TypeReference<Bool>() {
         });
         List<Type> decode = FunctionReturnDecoder.decode(body, function.getOutputParameters());
-        System.out.println("getConsent: " + decode.get(0).getValue());
+        assertTrue(decode.size() > 0);
+        System.out.println("getConsent: " + result.getValue());
     }
 
     protected Exchange createExchangeWithHeader(String key, Object value) {
