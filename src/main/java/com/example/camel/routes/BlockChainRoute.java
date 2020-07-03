@@ -107,10 +107,14 @@ public class BlockChainRoute extends RouteBuilder {
                     exchange.getIn().setHeader(GAS_PRICE, "21000");
                     exchange.getIn().setHeader(DATA, encodedFunction);
                 })
-                .to("web3j://http://127.0.0.1:7545")
+                .to(WEB3_URL + ":" + WEB3_PORT)
                 .process(exchange -> {
                     log.info("TX:{}", exchange.getIn().getBody());
+                    Response response = new Response("CONSENT", "Your consent is changed");
+                    String json = gson.toJson(response);
+                    exchange.getIn().setBody(json);
                 })
+                .to("websocket://localhost:8000/ws?sendToAll=true")
                 .end();
 
         from("web3j://http://127.0.0.1:7545?operation=ETH_LOG_OBSERVABLE&topics=" + topics)

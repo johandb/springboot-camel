@@ -43,6 +43,8 @@ export class AppComponent implements OnInit, OnDestroy {
         this.accounts = this.response.data.split(',');
         console.log('account:', this.accounts);
         break;
+      case 'CONSENT':
+        console.log();
     }
   }
 

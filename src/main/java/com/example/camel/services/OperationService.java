@@ -18,13 +18,25 @@ public class OperationService {
     @Value("${activemq.queue.operation}")
     private String operationQueue;
 
+    @Value("${activemq.queue.consent}")
+    private String consentQueue;
+
     public void sentMessage(final Operation operation) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(operation);
 
         log.info("Sending to queue {} - {}", operationQueue, json);
         jmsTemplate.convertAndSend(operationQueue, json);
-        
+
+    }
+
+    public void sentConsent(final Operation operation) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(operation);
+
+        log.info("Sending to queue {} - {}", consentQueue, json);
+        jmsTemplate.convertAndSend(consentQueue, json);
+
     }
 
 }
