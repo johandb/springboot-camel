@@ -22,11 +22,11 @@ public class OperationController {
         operationService.sentMessage(operation);
     }
 
-    // localhost:8080/api/v1/operation/consent  { operation: "", txData: "true | false"
-    @PostMapping(path = "/consent", consumes = MediaType.APPLICATION_JSON_VALUE)
+    // localhost:8080/api/v1/operation/consent  { "operation": "", "txData": "true | false"
+    @PostMapping(value = "/consent", consumes = MediaType.APPLICATION_JSON_VALUE)
     public void sentConsent(@RequestBody Operation operation) throws Exception {
-        log.info("#sentOperation() - received operation:{}", operation);
-        operationService.sentMessage(operation);
+        log.info("#sentConsent() - received operation:{}", operation);
+        operationService.sentConsent(operation);
     }
 
 
